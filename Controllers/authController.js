@@ -1,5 +1,6 @@
 import User from "../models/UserSchema.js";
 import Doctor from "../models/DoctorSchema.js";
+import Admin from "../models/AdminSchema.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -22,7 +23,8 @@ export const register = async (req, res) => {
       user = await User.findOne({ email });
     } else if (role === "doctor") {
       user = await Doctor.findOne({ email });
-    }
+    } else if (role === "admin") {
+      user = await Admin.findOne({email}) }
     if (user) {
       return res.status(400).json({ message: "User already exist" });
     }
@@ -50,6 +52,16 @@ export const register = async (req, res) => {
         role,
       });
     }
+    if (role === "admin") {
+      user = new Admin({
+        name,
+        email,
+        password: hashPassword,
+        photo,
+        role,
+      });
+    }
+    console.log('user', user)
     await user.save();
 
     res
@@ -69,6 +81,7 @@ export const login = async (req, res) => {
 
     const patient = await User.findOne({ email });
     const doctor = await Doctor.findOne({ email });
+    const admin = await Admin.findOne({ email });
 
     if (patient) {
       user = patient;
@@ -76,12 +89,18 @@ export const login = async (req, res) => {
     if (doctor) {
       user = doctor;
     }
+    if(admin) {
+      user = admin
+    }
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
+    const isPasswordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
 
     if (!isPasswordMatch) {
       return res
@@ -93,15 +112,13 @@ export const login = async (req, res) => {
 
     const { password, role, appointments, ...rest } = user._doc;
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Successfully logged in",
-        token,
-        data: { ...rest },
-        role,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Successfully logged in",
+      token,
+      data: { ...rest },
+      role,
+    });
   } catch (err) {
     res.status(500).json({ status: false, message: "Login Failed" });
   }

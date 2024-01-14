@@ -74,7 +74,7 @@ export const getAllDoctors = async (req, res) => {
         ],
       }).select("-password");
     } else {
-      doctors = await Doctor.find({ isApproved: "approved" }).select(
+      doctors = await Doctor.find().select(
         "-password"
       );
     }
@@ -105,16 +105,15 @@ export const getDoctorProfile = async(req, res) => {
     }
 
     const { password, ...rest } = doctor._doc;
-    const appointments = await BookingSchema.find({doctor: doctorId})
+    // const appointments = await BookingSchema.find({doctor: doctorId})
 
     res.status(200).json({
       success: true,
       message: "Profile info is getting",
-      data: { ...rest, appointments },
+      data: { ...rest},
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "SOmething went wrong, cannot get" });
+      res.status(500)
+      .json({ success: false, message: "Something went wrong, cannot get" });
   }
 }

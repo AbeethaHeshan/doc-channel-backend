@@ -98,7 +98,7 @@ export const getUSerProfile = async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .json({ success: false, message: "SOmething went wrong, cannot get" });
+      .json({ success: false, message: "Something went wrong, cannot get" });
   }
 };
 

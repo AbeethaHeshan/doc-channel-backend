@@ -16,11 +16,11 @@ const DoctorSchema = new mongoose.Schema({
   qualifications: {
     type: Array,
   },
-
+  hospital: {type: String},
   experiences: {
     type: Array,
   },
-
+  totalPatients: {type: Number},
   bio: { type: String, maxLength: 50 },
   about: { type: String },
   timeSlots: { type: Array },
